@@ -91,11 +91,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void onSendClick(View view) {
         tvNumber=(EditText) findViewById(R.id.tvNumber);
+        String theNumber=tvNumber.getText().toString();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
                 != PackageManager.PERMISSION_GRANTED) {
             getPermissionToReadSMS();
         } else {
-            smsManager.sendTextMessage("+48602890836", null, input.getText().toString(), null, null);
+            smsManager.sendTextMessage(theNumber/*"+48602890836"*/, null, input.getText().toString(), null, null);
             Toast.makeText(this, "Message sent!", Toast.LENGTH_SHORT).show();
         }
     }
