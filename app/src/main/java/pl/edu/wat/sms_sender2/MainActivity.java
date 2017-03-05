@@ -88,6 +88,19 @@ public class MainActivity extends AppCompatActivity {
         arrayAdapter.insert(smsMessage, 0);
         arrayAdapter.notifyDataSetChanged();
     }
+    public static String StringtoBinary(EditText input){
+        byte[] bytes=input.getText().toString().getBytes();
+        StringBuilder binary=new StringBuilder();
+        for(byte b:bytes){
+            int val=b;
+            for(int i=0;i<8;i++){
+                binary.append((val&128)==0 ? 0:1);
+                val<<=1;
+            }
+
+        }
+        return binary.toString();
+    }
 
     public void onSendClick(View view) {
         tvNumber=(EditText) findViewById(R.id.tvNumber);
@@ -96,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                 != PackageManager.PERMISSION_GRANTED) {
             getPermissionToReadSMS();
         } else {
-            smsManager.sendTextMessage(theNumber/*"+48602890836"*/, null, input.getText().toString(), null, null);
+            smsManager.sendTextMessage(theNumber/*"+48602890836"*/, null, StringtoBinary(input) /*input.getText().toString()*/, null, null);
             Toast.makeText(this, "Message sent!", Toast.LENGTH_SHORT).show();
         }
     }
