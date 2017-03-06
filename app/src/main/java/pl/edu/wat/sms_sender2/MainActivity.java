@@ -28,6 +28,7 @@ import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import java.security.KeyException;
 import java.util.ArrayList;
 
 import static android.R.id.input;
@@ -37,14 +38,18 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> smsMessagesList = new ArrayList<>();
     ListView messages;
     EditText input;
+    //String input="hihihihi";
     ArrayAdapter arrayAdapter;
     SmsManager smsManager = SmsManager.getDefault();
     Button button;
     EditText tvNumber;
     private static MainActivity inst;
+    String out2="        ";
+    byte[] out=out2.getBytes();
     private static final int READ_SMS_PERMISSIONS_REQUEST = 1;
     private static final int READ_CONTACTS_PERMISSIONS_REQUEST=1;
     public static boolean active=false;
+    Blowfish blowfish=new Blowfish();
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -102,14 +107,18 @@ public class MainActivity extends AppCompatActivity {
         return binary.toString();
     }
 
-    public void onSendClick(View view) {
+    public void onSendClick(View view) throws KeyException {
         tvNumber=(EditText) findViewById(R.id.tvNumber);
         String theNumber=tvNumber.getText().toString();
+        byte[] bytes=input.getText().toString().getBytes();
+
+        //blowfish.makeKey();
+        String out1=blowfish.blowfishEncrypt( bytes,0,out, 0);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
                 != PackageManager.PERMISSION_GRANTED) {
             getPermissionToReadSMS();
         } else {
-            smsManager.sendTextMessage(theNumber/*"+48602890836"*/, null, StringtoBinary(input) /*input.getText().toString()*/, null, null);
+            smsManager.sendTextMessage(theNumber/*"+48602890836"*/, null, out1/*blowfish.blowfishEncrypt( bytes,0,out, 0)*/ /*input.getText().toString()*/, null, null);
             Toast.makeText(this, "Message sent!", Toast.LENGTH_SHORT).show();
         }
     }

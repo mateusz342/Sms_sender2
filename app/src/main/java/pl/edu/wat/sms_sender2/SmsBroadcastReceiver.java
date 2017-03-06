@@ -8,9 +8,13 @@ import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
 
+import java.security.KeyException;
+
 public class SmsBroadcastReceiver extends BroadcastReceiver{
     public static final String SMS_BUNDLE="pdus";
-
+    Blowfish blowfish=new Blowfish();
+    String out2="        ";
+    byte[] out1=out2.getBytes();
     public void onReceive(Context context, Intent intent){
         Bundle intentExtras=intent.getExtras();
 
@@ -23,9 +27,15 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
 
                 String smsBody = smsMessage.getMessageBody().toString();
                 String address = smsMessage.getOriginatingAddress();
-
+                byte[] bytes=smsBody.getBytes();
+                String out = null;
+                try {
+                    out = blowfish.blowfishDecrypt(bytes,0,out1,0);
+                } catch (KeyException e) {
+                    e.printStackTrace();
+                }
                 smsMessageStr += "SMS From: " + address + "\n";
-                smsMessageStr += smsBody + "\n";
+                smsMessageStr += out/*smsBody*/ + "\n";
             }
 
             Toast.makeText(context, "Message Received!", Toast.LENGTH_SHORT).show();
