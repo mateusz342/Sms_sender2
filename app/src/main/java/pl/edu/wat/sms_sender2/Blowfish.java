@@ -354,7 +354,7 @@ public class Blowfish {
         return aString;//out.toString()/*Arrays.toString(out)*/;
     }
 
-    public String blowfishDecrypt (byte[] in, int off, byte[] out, int outOff) throws KeyException {
+    public void/*String*/ blowfishDecrypt (byte[] in, int off, byte[] out, int outOff) throws KeyException {
 
         makeKey(key);
         int L = ((in[off    ] & 0xFF) << 24) | ((in[off + 1] & 0xFF) << 16) |
@@ -388,8 +388,8 @@ public class Blowfish {
         out[outOff + 5] = (byte)((L >>> 16) & 0xFF);
         out[outOff + 6] = (byte)((L >>>  8) & 0xFF);
         out[outOff + 7] = (byte)( L         & 0xFF);
-        String aString=new String(out);
-        return aString;
+        //String aString=new String(out);
+        //return aString;
     }
 
 
