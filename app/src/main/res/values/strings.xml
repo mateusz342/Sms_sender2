@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Sms_sender2</string>
+    <string name="title_activity_send_activity">Send_activity</string>
+    <string name="title_activity_decrypt">Decrypt</string>
 </resources>

@@ -40,11 +40,11 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
 
             Toast.makeText(context, "Message Received!", Toast.LENGTH_SHORT).show();
 
-            if(MainActivity.active){
-                MainActivity inst=MainActivity.instance();
+            if(Send_activity.active){
+                Send_activity inst=Send_activity.instance();
                 inst.updateInbox(smsMessageStr);
             }else{
-                Intent i=new Intent(context,MainActivity.class);
+                Intent i=new Intent(context,Send_activity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(i);
             }
