@@ -7,31 +7,23 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
+import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.security.KeyException;
 import java.util.ArrayList;
-
-import static android.R.id.input;
 
 public class Send_activity extends AppCompatActivity {
 
@@ -51,11 +43,18 @@ public class Send_activity extends AppCompatActivity {
     public static boolean active=false;
     Blowfish blowfish=new Blowfish();
     Button decrypt;
+
+
+
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
+
+    public Send_activity() throws KeyException {
+    }
 
     public static Send_activity instance() {
         return inst;
@@ -65,6 +64,7 @@ public class Send_activity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_activity);
         this.startService(new Intent(this, QuickResponseService.class));
@@ -73,6 +73,7 @@ public class Send_activity extends AppCompatActivity {
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, smsMessagesList);
         messages.setAdapter(arrayAdapter);
         decrypt=(Button) findViewById(R.id.decrypt);
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             getPermissionToReadContacts();
         }
@@ -92,7 +93,13 @@ public class Send_activity extends AppCompatActivity {
             }
         });
 
+
     }
+
+
+
+
+
     @Override
     public void onStart() {
         super.onStart();
@@ -118,21 +125,77 @@ public class Send_activity extends AppCompatActivity {
         return binary.toString();
     }
 
+
+
     public void onSendClick(View view) throws KeyException {
         tvNumber=(EditText) findViewById(R.id.tvNumber);
         String theNumber=tvNumber.getText().toString();
         byte[] bytes=input.getText().toString().getBytes();
 
         //blowfish.makeKey();
-        String out1=blowfish.blowfishEncrypt( bytes,0,out, 0);
+        //String out1=blowfish.blowfishEncrypt( bytes,0,out, 0);
+        byte[] out1=blowfish.blowfishEncrypt( bytes,0,out, 0);
+        byte[] out2= encodingfunction(out1,0);
+        //String aString=new String(out1);
+        String aString=new String(out2);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
                 != PackageManager.PERMISSION_GRANTED) {
             getPermissionToReadSMS();
         } else {
-            smsManager.sendTextMessage(theNumber/*"+48602890836"*/, null, out1/*blowfish.blowfishEncrypt( bytes,0,out, 0)*/ /*input.getText().toString()*/, null, null);
+            smsManager.sendTextMessage(theNumber/*"+48602890836"*/, null, aString/*blowfish.blowfishEncrypt( bytes,0,out, 0)*/ /*input.getText().toString()*/, null, null);
             Toast.makeText(this, "Message sent!", Toast.LENGTH_SHORT).show();
         }
     }
+
+   byte [] table=new byte[16];
+
+    public byte[] encodingfunction(byte[] intoencode,int out){
+        for(int i=0;i<intoencode.length;i++){
+            //table[out]= (byte) (intoencode[i] & 0xF0);
+            //table[out+1]= (byte) (intoencode[i] & 0x0F);
+            table[out]=(byte) (intoencode[i] & 0x0F);
+            table[out+1]= (byte)((intoencode[i]>>>4)&0x0F);
+            out+=2;
+        }
+
+        for(int i=0;i<table.length;i++){
+            if(table[i]==0)
+                table[i]=64;
+            if(table[i]==1)
+                table[i]=65;
+            if(table[i]==2)
+                table[i]=66;
+            if(table[i]==3)
+                table[i]=67;
+            if(table[i]==4)
+                table[i]=68;
+            if(table[i]==5)
+                table[i]=69;
+            if(table[i]==6)
+                table[i]=70;
+            if(table[i]==7)
+                table[i]=71;
+            if(table[i]==8)
+                table[i]=72;
+            if(table[i]==9)
+                table[i]=73;
+            if(table[i]==10)
+                table[i]=74;
+            if(table[i]==11)
+                table[i]=75;
+            if(table[i]==12)
+                table[i]=76;
+            if(table[i]==13)
+                table[i]=77;
+            if(table[i]==14)
+                table[i]=78;
+            if(table[i]==15)
+                table[i]=79;
+        }
+        return table;
+    }
+
+
 
     public void onSendClick1(View view){
         tvNumber=(EditText) findViewById(R.id.tvNumber);
@@ -145,6 +208,8 @@ public class Send_activity extends AppCompatActivity {
             Toast.makeText(this, "Message sent!", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
 
     public void getPermissionToReadSMS() {
@@ -220,6 +285,12 @@ public class Send_activity extends AppCompatActivity {
             //if(smsInboxCursor.getString(indexAddress).equals("PHONE NUMBER HERE")){
             arrayAdapter.add(str);//}
         } while (smsInboxCursor.moveToNext());
+
+        for(int i=0; i<arrayAdapter.getCount();i++){
+            if(i==arrayAdapter.getCount()-1){
+            Object obj=arrayAdapter.getItem(i);
+                Object oo=obj;}
+        }
     }
 
 

@@ -1,13 +1,6 @@
 package pl.edu.wat.sms_sender2;
 
-import java.security.Key;
 import java.security.KeyException;
-import java.util.Arrays;
-
-
-import javax.crypto.Cipher;
-
-import static android.R.attr.key;
 
 /**
  * Created by olszewskmate2 on 05.03.2017.
@@ -309,14 +302,13 @@ public class Blowfish {
      *	operations, while BF_encrypt outputs its result as an int array
      *	suitable for, and used during, the expansion of the user-key into
      *	a Blowfish session key.
-     *
-     *	@param	in		input byte array of plain text.
-     *	@param	off		index in in of where to start considering data.
-     *	@param	out		will contain the cipher-text block.
-     *	@param	outOff	index in out where cipher-text starts.
+     *    @param    in        input byte array of plain text.
+     *	@param    off        index in in of where to start considering data.
+     * @param    out        will contain the cipher-text block.
+     * @param    outOff    index in out where cipher-text starts.
      */
 
-    public  String blowfishEncrypt (byte[] in, int off, byte[] out, int outOff) throws KeyException {
+    public byte[] blowfishEncrypt (byte[] in, int off, byte[] out, int outOff) throws KeyException {
             //makeKey(intToByteArray(key));
             makeKey(key);
 
@@ -350,11 +342,12 @@ public class Blowfish {
         out[outOff + 5] = (byte)((L >>> 16) & 0xFF);
         out[outOff + 6] = (byte)((L >>>  8) & 0xFF);
         out[outOff + 7] = (byte)( L         & 0xFF);
-        String aString=new String(out);
-        return aString;//out.toString()/*Arrays.toString(out)*/;
+       return out;
+        //String aString=new String(out);
+       // return aString;//out.toString()/*Arrays.toString(out)*/;
     }
 
-    public void/*String*/ blowfishDecrypt (byte[] in, int off, byte[] out, int outOff) throws KeyException {
+    public byte[] blowfishDecrypt (byte[] in, int off, byte[] out, int outOff) throws KeyException {
 
         makeKey(key);
         int L = ((in[off    ] & 0xFF) << 24) | ((in[off + 1] & 0xFF) << 16) |
@@ -388,8 +381,8 @@ public class Blowfish {
         out[outOff + 5] = (byte)((L >>> 16) & 0xFF);
         out[outOff + 6] = (byte)((L >>>  8) & 0xFF);
         out[outOff + 7] = (byte)( L         & 0xFF);
-        //String aString=new String(out);
-        //return aString;
+    //    String aString=new String(out);
+        return out;
     }
 
 
