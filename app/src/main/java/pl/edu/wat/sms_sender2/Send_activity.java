@@ -152,9 +152,10 @@ public class Send_activity extends AppCompatActivity {
 
     //}
 
-   byte [] table=new byte[16];
+  // byte [] table=new byte[16];
 
     public byte[] encodingfunction(byte[] intoencode,int out){
+        byte[] table=new byte[intoencode.length*2];
         for(int i=0;i<intoencode.length;i++){
             //table[out]= (byte) (intoencode[i] & 0xF0);
             //table[out+1]= (byte) (intoencode[i] & 0x0F);

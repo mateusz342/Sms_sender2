@@ -351,7 +351,7 @@ public class Blowfish {
             outOff+=8;
             off+=8;
         }
-       return out;
+       return newout;
         //String aString=new String(out);
        // return aString;//out.toString()/*Arrays.toString(out)*/;
     }
@@ -374,6 +374,9 @@ public class Blowfish {
     public byte[] blowfishDecrypt (byte[] in, int off, byte[] out, int outOff) throws KeyException {
 
         makeKey(key);
+        int x=in.length/8;
+
+        for(int j=0;j<x;j++){
         int L = ((in[off    ] & 0xFF) << 24) | ((in[off + 1] & 0xFF) << 16) |
                 ((in[off + 2] & 0xFF) <<  8) |  (in[off + 3] & 0xFF),
                 R = ((in[off + 4] & 0xFF) << 24) | ((in[off + 5] & 0xFF) << 16) |
@@ -405,6 +408,10 @@ public class Blowfish {
         out[outOff + 5] = (byte)((L >>> 16) & 0xFF);
         out[outOff + 6] = (byte)((L >>>  8) & 0xFF);
         out[outOff + 7] = (byte)( L         & 0xFF);
+
+            outOff+=8;
+            off+=8;
+        }
     //    String aString=new String(out);
         return out;
     }

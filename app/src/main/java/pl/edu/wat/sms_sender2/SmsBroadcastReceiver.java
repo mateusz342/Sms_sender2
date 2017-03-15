@@ -13,8 +13,8 @@ import java.security.KeyException;
 public class SmsBroadcastReceiver extends BroadcastReceiver{
     public static final String SMS_BUNDLE="pdus";
     Blowfish blowfish=new Blowfish();
-    String out4="        ";
-    byte[] out3=out4.getBytes();
+    //String out4="        ";
+    //byte[] out3=out4.getBytes();
     String out2="        ";
     byte[] out1=out2.getBytes();
     int i =0;
@@ -32,7 +32,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
                 String address = smsMessage.getOriginatingAddress();
                 out1=smsBody.getBytes();
                 byte[] in=decodingfunction(out1,0);
-
+                byte[] out3=new byte[in.length];
                 byte[]  out = new byte[0];
                 try {
                     out = blowfish.blowfishDecrypt(in,0,out3,0);
@@ -64,8 +64,10 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
 
 
 
-    byte[] newin=new byte[8];
+    //byte[] newin=new byte[8];
     public byte[] decodingfunction(byte[] table, int index){
+
+        byte[] newin=new byte[table.length/2];
 
         for(int i=0;i<table.length;i++){
             if(table[i]==64)
