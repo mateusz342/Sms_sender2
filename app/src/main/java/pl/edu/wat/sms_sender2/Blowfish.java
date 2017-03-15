@@ -313,12 +313,15 @@ public class Blowfish {
             //makeKey(intToByteArray(key));
             makeKey(key);
         byte[] newin=padding(in);
+        byte[] newout=Arrays.copyOf(out,newin.length);
+        int x=newin.length/8;
 
-        //for(off;off<in.length;off+= 8){
-        int L = ((in[off    ] & 0xFF) << 24) | ((in[off + 1] & 0xFF) << 16) |
-                ((in[off + 2] & 0xFF) <<  8) |  (in[off + 3] & 0xFF),
-                R = ((in[off + 4] & 0xFF) << 24) | ((in[off + 5] & 0xFF) << 16) |
-                        ((in[off + 6] & 0xFF) <<  8) |  (in[off + 7] & 0xFF),
+        for(int j=0;j<x;j++){
+
+        int L = ((newin[off    ] & 0xFF) << 24) | ((newin[off + 1] & 0xFF) << 16) |
+                ((newin[off + 2] & 0xFF) <<  8) |  (newin[off + 3] & 0xFF),
+                R = ((newin[off + 4] & 0xFF) << 24) | ((newin[off + 5] & 0xFF) << 16) |
+                        ((newin[off + 6] & 0xFF) <<  8) |  (newin[off + 7] & 0xFF),
                 a, b, c, d;
 
         L ^= P[0];
@@ -337,16 +340,17 @@ public class Blowfish {
         }
         R ^= P[rounds + 1];
 
-        out[outOff    ] = (byte)((R >>> 24) & 0xFF);
-        out[outOff + 1] = (byte)((R >>> 16) & 0xFF);
-        out[outOff + 2] = (byte)((R >>>  8) & 0xFF);
-        out[outOff + 3] = (byte)( R         & 0xFF);
-        out[outOff + 4] = (byte)((L >>> 24) & 0xFF);
-        out[outOff + 5] = (byte)((L >>> 16) & 0xFF);
-        out[outOff + 6] = (byte)((L >>>  8) & 0xFF);
-        out[outOff + 7] = (byte)( L         & 0xFF);
-     //       outOff+=8;
-      //  }
+        newout[outOff    ] = (byte)((R >>> 24) & 0xFF);
+        newout[outOff + 1] = (byte)((R >>> 16) & 0xFF);
+        newout[outOff + 2] = (byte)((R >>>  8) & 0xFF);
+        newout[outOff + 3] = (byte)( R         & 0xFF);
+        newout[outOff + 4] = (byte)((L >>> 24) & 0xFF);
+        newout[outOff + 5] = (byte)((L >>> 16) & 0xFF);
+        newout[outOff + 6] = (byte)((L >>>  8) & 0xFF);
+        newout[outOff + 7] = (byte)( L         & 0xFF);
+            outOff+=8;
+            off+=8;
+        }
        return out;
         //String aString=new String(out);
        // return aString;//out.toString()/*Arrays.toString(out)*/;
