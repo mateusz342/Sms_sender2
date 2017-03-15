@@ -9,7 +9,6 @@ import java.util.Arrays;
 
 public class Blowfish {
     public long key=0x2FFD72DB;
-   // byte key=(byte)0x2FFD72DB;
     private static final long[]
             Pi = {
             0x243F6A88, 0x85A308D3, 0x13198A2E, 0x03707344, 0xA4093822, 0x299F31D0,
@@ -310,7 +309,6 @@ public class Blowfish {
      */
 
     public byte[] blowfishEncrypt (byte[] in, int off, byte[] out, int outOff) throws KeyException {
-            //makeKey(intToByteArray(key));
             makeKey(key);
         byte[] newin=padding(in);
         byte[] newout=Arrays.copyOf(out,newin.length);
@@ -352,8 +350,6 @@ public class Blowfish {
             off+=8;
         }
        return newout;
-        //String aString=new String(out);
-       // return aString;//out.toString()/*Arrays.toString(out)*/;
     }
 
 
@@ -412,7 +408,6 @@ public class Blowfish {
             outOff+=8;
             off+=8;
         }
-    //    String aString=new String(out);
         return out;
     }
 

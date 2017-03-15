@@ -13,11 +13,8 @@ import java.security.KeyException;
 public class SmsBroadcastReceiver extends BroadcastReceiver{
     public static final String SMS_BUNDLE="pdus";
     Blowfish blowfish=new Blowfish();
-    //String out4="        ";
-    //byte[] out3=out4.getBytes();
     String out2="        ";
     byte[] out1=out2.getBytes();
-    int i =0;
     public void onReceive(Context context, Intent intent){
         Bundle intentExtras=intent.getExtras();
 
@@ -31,6 +28,12 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
                 String smsBody = smsMessage.getMessageBody().toString();
                 String address = smsMessage.getOriginatingAddress();
                 out1=smsBody.getBytes();
+                int length=out1.length;
+                if(out1[length-1]==32){
+                    smsMessageStr += "SMS From: " + address + "\n";
+                    smsMessageStr += smsBody + "\n";
+                }
+                else{
                 byte[] in=decodingfunction(out1,0);
                 byte[] out3=new byte[in.length];
                 byte[]  out = new byte[0];
@@ -42,7 +45,8 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
 
                 String o=new String(out);
                 smsMessageStr += "SMS From: " + address + "\n";
-                smsMessageStr += o /*smsBody*/ + "\n";
+                smsMessageStr += o  + "\n";
+                }
             }
 
             Toast.makeText(context, "Message Received!", Toast.LENGTH_SHORT).show();
@@ -62,9 +66,6 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
         }
     }
 
-
-
-    //byte[] newin=new byte[8];
     public byte[] decodingfunction(byte[] table, int index){
 
         byte[] newin=new byte[table.length/2];

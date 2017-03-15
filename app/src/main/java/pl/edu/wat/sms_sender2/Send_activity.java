@@ -30,7 +30,6 @@ public class Send_activity extends AppCompatActivity {
     ArrayList<String> smsMessagesList = new ArrayList<>();
     ListView messages;
     EditText input;
-    //String input="hihihihi";
     ArrayAdapter arrayAdapter;
     SmsManager smsManager = SmsManager.getDefault();
     Button button;
@@ -131,34 +130,23 @@ public class Send_activity extends AppCompatActivity {
         tvNumber=(EditText) findViewById(R.id.tvNumber);
         String theNumber=tvNumber.getText().toString();
         byte[] bytes=input.getText().toString().getBytes();
-
-        //blowfish.makeKey();
-        //String out1=blowfish.blowfishEncrypt( bytes,0,out, 0);
-    //   for(int i=0;i<bytes.length;i+=8)
         byte[] out1=blowfish.blowfishEncrypt( bytes,0,out, 0);
         byte[] out2= encodingfunction(out1,0);
-        //String aString=new String(out1);
         String aString=new String(out2);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
                 != PackageManager.PERMISSION_GRANTED) {
             getPermissionToReadSMS();
         } else {
-            smsManager.sendTextMessage(theNumber/*"+48602890836"*/, null, aString/*blowfish.blowfishEncrypt( bytes,0,out, 0)*/ /*input.getText().toString()*/, null, null);
+            smsManager.sendTextMessage(theNumber, null, aString, null, null);
             Toast.makeText(this, "Message sent!", Toast.LENGTH_SHORT).show();
         }
     }
 
-  //  public byte toBlowfish(){
 
-    //}
-
-  // byte [] table=new byte[16];
 
     public byte[] encodingfunction(byte[] intoencode,int out){
         byte[] table=new byte[intoencode.length*2];
         for(int i=0;i<intoencode.length;i++){
-            //table[out]= (byte) (intoencode[i] & 0xF0);
-            //table[out+1]= (byte) (intoencode[i] & 0x0F);
             table[out]=(byte) (intoencode[i] & 0x0F);
             table[out+1]= (byte)((intoencode[i]>>>4)&0x0F);
             out+=2;
@@ -210,7 +198,7 @@ public class Send_activity extends AppCompatActivity {
                 != PackageManager.PERMISSION_GRANTED) {
             getPermissionToReadSMS();
         } else {
-            smsManager.sendTextMessage(theNumber, null, input.getText().toString(), null, null);
+            smsManager.sendTextMessage(theNumber, null, input.getText().toString()+" ", null, null);
             Toast.makeText(this, "Message sent!", Toast.LENGTH_SHORT).show();
         }
     }
