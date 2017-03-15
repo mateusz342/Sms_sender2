@@ -134,6 +134,7 @@ public class Send_activity extends AppCompatActivity {
 
         //blowfish.makeKey();
         //String out1=blowfish.blowfishEncrypt( bytes,0,out, 0);
+    //   for(int i=0;i<bytes.length;i+=8)
         byte[] out1=blowfish.blowfishEncrypt( bytes,0,out, 0);
         byte[] out2= encodingfunction(out1,0);
         //String aString=new String(out1);
@@ -146,6 +147,10 @@ public class Send_activity extends AppCompatActivity {
             Toast.makeText(this, "Message sent!", Toast.LENGTH_SHORT).show();
         }
     }
+
+  //  public byte toBlowfish(){
+
+    //}
 
    byte [] table=new byte[16];
 

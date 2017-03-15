@@ -1,6 +1,7 @@
 package pl.edu.wat.sms_sender2;
 
 import java.security.KeyException;
+import java.util.Arrays;
 
 /**
  * Created by olszewskmate2 on 05.03.2017.
@@ -311,7 +312,9 @@ public class Blowfish {
     public byte[] blowfishEncrypt (byte[] in, int off, byte[] out, int outOff) throws KeyException {
             //makeKey(intToByteArray(key));
             makeKey(key);
+        byte[] newin=padding(in);
 
+        //for(off;off<in.length;off+= 8){
         int L = ((in[off    ] & 0xFF) << 24) | ((in[off + 1] & 0xFF) << 16) |
                 ((in[off + 2] & 0xFF) <<  8) |  (in[off + 3] & 0xFF),
                 R = ((in[off + 4] & 0xFF) << 24) | ((in[off + 5] & 0xFF) << 16) |
@@ -342,9 +345,26 @@ public class Blowfish {
         out[outOff + 5] = (byte)((L >>> 16) & 0xFF);
         out[outOff + 6] = (byte)((L >>>  8) & 0xFF);
         out[outOff + 7] = (byte)( L         & 0xFF);
+     //       outOff+=8;
+      //  }
        return out;
         //String aString=new String(out);
        // return aString;//out.toString()/*Arrays.toString(out)*/;
+    }
+
+
+
+    public byte[] padding(byte[] in){
+        int modulo=   in.length%8;
+        int counttopadding=8-modulo;
+        int sizeofnewtable=in.length+counttopadding;
+
+        byte[] newtable= Arrays.copyOf(in,sizeofnewtable);
+        return newtable;
+    }
+
+    public int getinlength(byte[] in){
+        return in.length;
     }
 
     public byte[] blowfishDecrypt (byte[] in, int off, byte[] out, int outOff) throws KeyException {

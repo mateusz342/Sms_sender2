@@ -17,6 +17,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
     byte[] out3=out4.getBytes();
     String out2="        ";
     byte[] out1=out2.getBytes();
+    int i =0;
     public void onReceive(Context context, Intent intent){
         Bundle intentExtras=intent.getExtras();
 
@@ -29,7 +30,6 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
 
                 String smsBody = smsMessage.getMessageBody().toString();
                 String address = smsMessage.getOriginatingAddress();
-                String aString=new String(smsBody);
                 out1=smsBody.getBytes();
                 byte[] in=decodingfunction(out1,0);
 
@@ -61,6 +61,8 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
 
         }
     }
+
+
 
     byte[] newin=new byte[8];
     public byte[] decodingfunction(byte[] table, int index){
