@@ -1,14 +1,18 @@
 package pl.edu.wat.sms_sender2;
 
 import java.security.KeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 /**
  * Created by olszewskmate2 on 05.03.2017.
  */
 
 public class Blowfish {
-    public long key=0x2FFD72DB;
+    //public long key=0x2FFD72DB;
     private static final long[]
             Pi = {
             0x243F6A88, 0x85A308D3, 0x13198A2E, 0x03707344, 0xA4093822, 0x299F31D0,
@@ -308,8 +312,9 @@ public class Blowfish {
      * @param    outOff    index in out where cipher-text starts.
      */
 
-    public byte[] blowfishEncrypt (byte[] in, int off, byte[] out, int outOff) throws KeyException {
-            makeKey(key);
+    public byte[] blowfishEncrypt (byte[] in, int off, byte[] out, int outOff) throws KeyException, NoSuchAlgorithmException {
+        byte[] key=KeyGenerator();
+        makeKey(key);
         byte[] newin=padding(in);
         byte[] newout=Arrays.copyOf(out,newin.length);
         int x=newin.length/8;
@@ -349,7 +354,10 @@ public class Blowfish {
             outOff+=8;
             off+=8;
         }
-       return newout;
+        byte[] ciphertext=new byte[newout.length+key.length];
+        System.arraycopy(newout,0,ciphertext,0,newout.length);
+        System.arraycopy(key,0,ciphertext,newout.length,key.length);
+       return ciphertext;
     }
 
 
@@ -367,9 +375,8 @@ public class Blowfish {
         return in.length;
     }
 
-    public byte[] blowfishDecrypt (byte[] in, int off, byte[] out, int outOff) throws KeyException {
-
-        makeKey(key);
+    public byte[] blowfishDecrypt (byte[] in, int off, byte[] out, int outOff,byte[] keytoblowfish) throws KeyException, NoSuchAlgorithmException {
+        makeKey(keytoblowfish);
         int x=in.length/8;
 
         for(int j=0;j<x;j++){
@@ -442,11 +449,11 @@ public class Blowfish {
                 (byte)(key & 0xFF)};
     }
 
-    private synchronized void makeKey (long key/*byte[] key*//*Key key*/)
+    private synchronized void makeKey (/*long key*/ byte[] key /*SecretKey key*/)
             throws KeyException {
             //key&=0xFF;
-        //byte[] kk = key.getEncoded()
-       byte[] kk=intToByteArray(key);
+      //  byte[] kk = key.getEncoded();
+       byte[] kk=Arrays.copyOf(key,key.length);
         for(int g=0;g<kk.length;g++){
             if(kk[g]<0){
                 int x=(int) kk[g];
@@ -490,6 +497,17 @@ public class Blowfish {
         BF_encrypt(P[rounds], P[rounds + 1], sKey, 0);
         for (int i = 2; i < 4 * 256; i += 2)
             BF_encrypt(sKey[i - 2], sKey[i - 1], sKey, i);
+    }
+
+    public byte[] KeyGenerator() throws NoSuchAlgorithmException {
+        KeyGenerator keyGenerator= KeyGenerator.getInstance("Blowfish");
+        keyGenerator.init(448);
+
+        SecretKey key=keyGenerator.generateKey();
+
+        byte[] kk=key.getEncoded();
+        return kk;
+
     }
 
 

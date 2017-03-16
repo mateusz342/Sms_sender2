@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.security.KeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public class Send_activity extends AppCompatActivity {
@@ -126,12 +127,14 @@ public class Send_activity extends AppCompatActivity {
 
 
 
-    public void onSendClick(View view) throws KeyException {
+    public void onSendClick(View view) throws KeyException, NoSuchAlgorithmException {
         tvNumber=(EditText) findViewById(R.id.tvNumber);
         String theNumber=tvNumber.getText().toString();
         byte[] bytes=input.getText().toString().getBytes();
         byte[] out1=blowfish.blowfishEncrypt( bytes,0,out, 0);
         byte[] out2= encodingfunction(out1,0);
+
+
         String aString=new String(out2);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
                 != PackageManager.PERMISSION_GRANTED) {

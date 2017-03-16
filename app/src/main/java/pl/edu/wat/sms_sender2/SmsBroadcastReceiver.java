@@ -9,6 +9,8 @@ import android.telephony.SmsMessage;
 import android.widget.Toast;
 
 import java.security.KeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 public class SmsBroadcastReceiver extends BroadcastReceiver{
     public static final String SMS_BUNDLE="pdus";
@@ -35,15 +37,19 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
                 }
                 else{
                 byte[] in=decodingfunction(out1,0);
-                byte[] out3=new byte[in.length];
+                    byte[] ciphertextonly= Arrays.copyOfRange(in,0,in.length-56);
+                    byte[] keytoblowfish=Arrays.copyOfRange(in,in.length-56,in.length);
+                byte[] out3=new byte[ciphertextonly.length];
                 byte[]  out = new byte[0];
                 try {
-                    out = blowfish.blowfishDecrypt(in,0,out3,0);
+                    out = blowfish.blowfishDecrypt(ciphertextonly,0,out3,0,keytoblowfish);
                 } catch (KeyException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
                     e.printStackTrace();
                 }
 
-                String o=new String(out);
+                    String o=new String(out);
                 smsMessageStr += "SMS From: " + address + "\n";
                 smsMessageStr += o  + "\n";
                 }
