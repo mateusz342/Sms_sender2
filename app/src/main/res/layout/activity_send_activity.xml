@@ -22,29 +22,17 @@
         android:singleLine="true"
         android:background="@android:drawable/editbox_background"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"/>
 
-    <EditText
+
+    <Button
+        android:text="Send public key"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="text"
-        android:ems="10"
-        android:layout_weight="1"
-        android:hint="Enter receiver's public key"
-        android:id="@+id/publickey"
-        android:singleLine="true"
-        android:background="@android:drawable/editbox_background"
-        android:layout_below="@+id/tvNumber"
-        android:layout_alignParentStart="true" />
-
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="300dp"
-        android:id="@+id/messages"
-        android:background="#cdeede"
-
-        android:layout_below="@+id/publickey"
-        android:layout_alignParentStart="true" />
+        android:id="@+id/normal"
+        android:onClick="onSendClick1"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"/>
 
     <Button
         android:text="Send encrypted message"
@@ -52,36 +40,35 @@
         android:layout_height="wrap_content"
         android:id="@+id/send"
         android:onClick="onSendClick"
-        android:layout_below="@+id/input"
-        android:layout_alignParentStart="true" />
+        android:layout_above="@+id/normal"
+        android:layout_alignParentStart="true"/>
 
     <Button
-        android:text="Decrypt recieve message"
+        android:text="Generate your pair of keys"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/normal"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/decrypt" />
+        android:id="@+id/generate"
+        android:layout_above="@+id/send"
+        android:layout_alignParentStart="true"/>
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="320dp"
+        android:id="@+id/messages"
+        android:background="#cdeede"
+
+        android:layout_marginTop="22dp"
+        android:layout_below="@+id/tvNumber"
+        android:layout_alignParentStart="true"/>
 
     <EditText
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="60dp"
         android:id="@+id/input"
         android:background="#d0d3ee"
         android:gravity="top"
         android:hint="Enter message here..."
         android:layout_below="@+id/messages"
-        android:layout_alignParentStart="true" />
-
-    <Button
-        android:text="Send normal message"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/normal"
-        android:onClick="onSendClick1"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/send" />
-
+        android:layout_alignParentStart="true"/>
 
 </RelativeLayout>
