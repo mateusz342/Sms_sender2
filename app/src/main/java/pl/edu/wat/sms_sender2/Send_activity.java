@@ -1,5 +1,6 @@
 package pl.edu.wat.sms_sender2;
 
+import android.Manifest;
 import android.Manifest.permission;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -26,6 +27,8 @@ import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.Builder;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.math.BigInteger;
 import java.security.KeyException;
 import java.security.NoSuchAlgorithmException;
@@ -52,6 +55,11 @@ public class Send_activity extends AppCompatActivity {
     Elgamal elgamal=new Elgamal();
    // Elgamal_PublicKey elgamal_publicKey=new Elgamal_PublicKey();
     Button generate;
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -90,7 +98,13 @@ public class Send_activity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
             getPermissionToReadSMS();
 
-        } else {
+        }
+        if (ContextCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            verifyStoragePermissions();
+
+        }
+
+        else {
             refreshSmsInbox();
         }
 
@@ -108,6 +122,66 @@ public class Send_activity extends AppCompatActivity {
                 if(p!=null && g!=null & y!=null & x!=null){
                     Context context = getApplicationContext();
                 Toast.makeText(context, "Public and private keys successfully generated!" , Toast.LENGTH_SHORT).show();}
+            //private key save to file
+                try {
+                    File myFilex = new File("/sdcard/myprivatekeyx.txt");
+                    File myFilep = new File("/sdcard/myprivatekeyp.txt");
+                    if(!myFilex.exists() && !myFilep.exists()){
+                        myFilex.createNewFile();
+                        myFilep.createNewFile();
+                    }
+                    FileWriter fwx=new FileWriter(myFilex);
+                    FileWriter fwp=new FileWriter(myFilep);
+                    fwx.write(x.toString());
+                    fwx.flush();
+                    fwx.close();
+
+                    fwp.write(p.toString());
+                    fwp.flush();
+                    fwp.close();
+
+                    Toast.makeText(getBaseContext(), "Done writing SD 'myprivatekeyx.txt' and 'myprivatekeyp'", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Toast.makeText(getBaseContext(), e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                }
+
+                //publickey save to file
+
+                try {
+                    File myFilep = new File("/sdcard/mypublickeyp.txt");
+                    File myFiley = new File("/sdcard/mypublickeyy.txt");
+                    File myFileg=  new File("/sdcard/mypublickeyg.txt");
+                    if(!myFilep.exists() && !myFiley.exists() && !myFileg.exists()){
+                        myFilep.createNewFile();
+                        myFiley.createNewFile();
+                        myFileg.createNewFile();
+                    }
+
+                    FileWriter fwp=new FileWriter(myFilep);
+                    FileWriter fwy=new FileWriter(myFiley);
+                    FileWriter fwg=new FileWriter(myFileg);
+
+                    fwp.write(p.toString());
+                    fwp.flush();
+                    fwp.close();
+
+                    fwy.write(y.toString());
+                    fwy.flush();
+                    fwy.close();
+
+                    fwg.write(g.toString());
+                    fwg.flush();
+                    fwg.close();
+
+                    Toast.makeText(getBaseContext(), "Done writing SD mypublickey", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Toast.makeText(getBaseContext(), e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                }
+
+
+
 
             }
         });
@@ -161,10 +235,10 @@ public class Send_activity extends AppCompatActivity {
         byte[] c2=elgamal.getc2();
         byte[] outtodecode=new byte[c1.length+c2.length+out1.length-56];
         System.arraycopy(out1,0,outtodecode,0,out1.length-56);
-        System.arraycopy(c1,0,outtodecode,out1.length-56,outtodecode.length-c1.length);
-        System.arraycopy(c2,0,outtodecode,out1.length-56+c1.length,outtodecode.length);
-        byte[] out2 = encodingfunction(out1, 0);
-
+        System.arraycopy(c1,0,outtodecode,0+out1.length-56,c1.length);
+        System.arraycopy(c2,0,outtodecode,out1.length-56+c1.length,c2.length);
+        //byte[] out2 = encodingfunction(out1, 0);
+        byte[] out2=encodingfunction(outtodecode,0);
 
 
         String aString = new String(out2);
@@ -172,7 +246,10 @@ public class Send_activity extends AppCompatActivity {
                 != PackageManager.PERMISSION_GRANTED) {
             getPermissionToReadSMS();
         } else {
-            smsManager.sendTextMessage(theNumber, null, aString, null, null);
+            SmsManager sms=SmsManager.getDefault();
+            ArrayList<String> parts=sms.divideMessage(aString);
+            sms.sendMultipartTextMessage(theNumber,null,parts,null,null);
+            //smsManager.sendTextMessage(theNumber, null, aString, null, null);
             Toast.makeText(this, "Message sent!", Toast.LENGTH_SHORT).show();
         }
     }
@@ -261,6 +338,20 @@ public class Send_activity extends AppCompatActivity {
 
         }
     }
+    public void verifyStoragePermissions() {
+        // Check if we have write permission
+        if(ContextCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE)
+        !=PackageManager.PERMISSION_GRANTED) {
+            if (shouldShowRequestPermissionRationale(
+                    permission.WRITE_EXTERNAL_STORAGE)){
+                Toast.makeText(this,"Please allow permission!",Toast.LENGTH_SHORT).show();
+            }
+            requestPermissions(new String[]{permission.WRITE_EXTERNAL_STORAGE},REQUEST_EXTERNAL_STORAGE);
+        }
+
+
+        }
+
 
 
     @Override
@@ -288,6 +379,19 @@ public class Send_activity extends AppCompatActivity {
                 refreshSmsInbox();
             } else {
                 Toast.makeText(this, "Read SMS permission denied", Toast.LENGTH_SHORT).show();
+            }
+
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        if (requestCode == REQUEST_EXTERNAL_STORAGE) {
+            if (grantResults.length == 1 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Write file permission granted", Toast.LENGTH_SHORT).show();
+                refreshSmsInbox();
+            } else {
+                Toast.makeText(this, "Write file permission denied", Toast.LENGTH_SHORT).show();
             }
 
         } else {

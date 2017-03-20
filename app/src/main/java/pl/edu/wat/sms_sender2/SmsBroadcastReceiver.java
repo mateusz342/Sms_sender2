@@ -17,59 +17,76 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
     Blowfish blowfish=new Blowfish();
     String out2="        ";
     byte[] out1=out2.getBytes();
+    Elgamal elgamal=new Elgamal();
+    Elgamal_PublicKey pk;
+    Elgamal_PrivateKey prk;
+    Elgamal_keyset kset=new Elgamal_keyset(pk,prk);
+    int j=0;
+    String smsBody;
     public void onReceive(Context context, Intent intent){
         Bundle intentExtras=intent.getExtras();
 
-        if(intentExtras!=null){
-            Object[] sms =(Object[]) intentExtras.get(SMS_BUNDLE);
-            String smsMessageStr="";
-            for(int i=0;i<sms.length;++i){
-                String format=intentExtras.getString("format");
-                SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) sms[i], format);
+        if(intentExtras!=null) {
+            Object[] sms = (Object[]) intentExtras.get(SMS_BUNDLE);
+            String smsMessageStr = "";
+            String format;
+            SmsMessage smsMessage;
+            String smsBody;
+            String address1;
+            StringBuilder bodyText = new StringBuilder();
+            String body;
+            String address;
+            for (int i = 0; i < sms.length; ++i) {
+                format = intentExtras.getString("format");
+                smsMessage = SmsMessage.createFromPdu((byte[]) sms[i], format);
+                address = smsMessage.getOriginatingAddress().toString();
+                bodyText.append(smsMessage.getMessageBody().toString());
+                }
+                 body=bodyText.toString();
+                out1 = body.getBytes();
+                //out1=smsBody.toByteArray();
+                int length = out1.length;
+                if (out1[length - 1] == 32) {
+                   // smsMessageStr += "SMS From: " + address + "\n";
+                    smsMessageStr += body + "\n";
+                } else {
+                    byte[] in = decodingfunction(out1, 0);
+                    byte[] ciphertextonly = Arrays.copyOfRange(in, 0, in.length - 256);
+                    byte[] c1 = Arrays.copyOfRange(in, in.length - 256, in.length - 128);
+                    byte[] c2 = Arrays.copyOfRange(in, in.length - 128, in.length);
+                    byte[] key = elgamal.decrypt(c1, c2, kset.getPrk().getP(), kset.getPrk().getX());
+                    byte[] keytoblowfish = Arrays.copyOfRange(in, in.length - 56, in.length);
+                    byte[] out3 = new byte[ciphertextonly.length];
+                    byte[] out = new byte[0];
+                    try {
+                        out = blowfish.blowfishDecrypt(ciphertextonly, 0, out3, 0, keytoblowfish);
+                    } catch (KeyException e) {
+                        e.printStackTrace();
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
 
-                String smsBody = smsMessage.getMessageBody().toString();
-                String address = smsMessage.getOriginatingAddress();
-                out1=smsBody.getBytes();
-                int length=out1.length;
-                if(out1[length-1]==32){
-                    smsMessageStr += "SMS From: " + address + "\n";
-                    smsMessageStr += smsBody + "\n";
-                }
-                else{
-                byte[] in=decodingfunction(out1,0);
-                    byte[] ciphertextonly= Arrays.copyOfRange(in,0,in.length-56);
-                    byte[] keytoblowfish=Arrays.copyOfRange(in,in.length-56,in.length);
-                byte[] out3=new byte[ciphertextonly.length];
-                byte[]  out = new byte[0];
-                try {
-                    out = blowfish.blowfishDecrypt(ciphertextonly,0,out3,0,keytoblowfish);
-                } catch (KeyException e) {
-                    e.printStackTrace();
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    String o = new String(out);
+                   // smsMessageStr += "SMS From: " + address + "\n";
+                    smsMessageStr += o + "\n";
                 }
 
-                    String o=new String(out);
-                smsMessageStr += "SMS From: " + address + "\n";
-                smsMessageStr += o  + "\n";
-                }
-            }
 
             Toast.makeText(context, "Message Received!", Toast.LENGTH_SHORT).show();
 
 
-            if(Send_activity.active){
-                Send_activity inst=Send_activity.instance();
+            if (Send_activity.active) {
+                Send_activity inst = Send_activity.instance();
                 inst.updateInbox(smsMessageStr);
-            }else{
-                Intent i=new Intent(context,Send_activity.class);
+            } else {
+                Intent i = new Intent(context, Send_activity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(i);
             }
 
 
-
         }
+
     }
 
     public byte[] decodingfunction(byte[] table, int index){
