@@ -5,9 +5,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.math.BigInteger;
 import java.security.KeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -54,7 +59,25 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
                     byte[] ciphertextonly = Arrays.copyOfRange(in, 0, in.length - 256);
                     byte[] c1 = Arrays.copyOfRange(in, in.length - 256, in.length - 128);
                     byte[] c2 = Arrays.copyOfRange(in, in.length - 128, in.length);
-                    byte[] key = elgamal.decrypt(c1, c2, kset.getPrk().getP(), kset.getPrk().getX());
+                    File sdcard= Environment.getExternalStorageDirectory();
+                    File filep=new File(sdcard,"myprivatekeyp.txt");
+                    File filex=new File(sdcard,"myprivatekeyx.txt");
+                    try {
+                        BufferedReader brp = new BufferedReader(new FileReader(filep));
+                        BufferedReader brx = new BufferedReader(new FileReader(filex));
+
+                        String p1 = brp.readLine();
+                        brp.close();
+                        BigInteger p = new BigInteger(p1);
+
+                        String x1 = brx.readLine();
+                        brx.close();
+                        BigInteger x = new BigInteger(x1);
+
+                        byte[] key = elgamal.decrypt(c1, c2, p/*kset.getPrk().getP()*/, x /*kset.getPrk().getX()*/);
+                    }catch (Exception e){
+
+                    }
                     byte[] keytoblowfish = Arrays.copyOfRange(in, in.length - 56, in.length);
                     byte[] out3 = new byte[ciphertextonly.length];
                     byte[] out = new byte[0];
@@ -70,6 +93,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
                    // smsMessageStr += "SMS From: " + address + "\n";
                     smsMessageStr += o + "\n";
                 }
+
 
 
             Toast.makeText(context, "Message Received!", Toast.LENGTH_SHORT).show();

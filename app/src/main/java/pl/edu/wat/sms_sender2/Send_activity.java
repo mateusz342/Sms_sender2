@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.ContactsContract.PhoneLookup;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -27,7 +28,9 @@ import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.Builder;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.math.BigInteger;
 import java.security.KeyException;
@@ -60,6 +63,9 @@ public class Send_activity extends AppCompatActivity {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+
+    BigInteger p1,y,g;
+    BigInteger x;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -123,64 +129,67 @@ public class Send_activity extends AppCompatActivity {
                     Context context = getApplicationContext();
                 Toast.makeText(context, "Public and private keys successfully generated!" , Toast.LENGTH_SHORT).show();}
             //private key save to file
+                File myFilex = new File("/sdcard/myprivatekeyx.txt");
+                File myFilep = new File("/sdcard/myprivatekeyp.txt");
                 try {
-                    File myFilex = new File("/sdcard/myprivatekeyx.txt");
-                    File myFilep = new File("/sdcard/myprivatekeyp.txt");
-                    if(!myFilex.exists() && !myFilep.exists()){
+
+                    if(!myFilex.exists() && !myFilep.exists()) {
                         myFilex.createNewFile();
                         myFilep.createNewFile();
+
+                        FileWriter fwx = new FileWriter(myFilex);
+                        FileWriter fwp = new FileWriter(myFilep);
+                        fwx.write(x.toString());
+                        fwx.flush();
+                        fwx.close();
+
+                        fwp.write(p.toString());
+                        fwp.flush();
+                        fwp.close();
+
+                        Toast.makeText(getBaseContext(), "Done writing SD 'myprivatekeyx.txt' and 'myprivatekeyp'", Toast.LENGTH_SHORT).show();
+
                     }
-                    FileWriter fwx=new FileWriter(myFilex);
-                    FileWriter fwp=new FileWriter(myFilep);
-                    fwx.write(x.toString());
-                    fwx.flush();
-                    fwx.close();
-
-                    fwp.write(p.toString());
-                    fwp.flush();
-                    fwp.close();
-
-                    Toast.makeText(getBaseContext(), "Done writing SD 'myprivatekeyx.txt' and 'myprivatekeyp'", Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
+                    } catch (Exception e) {
                     Toast.makeText(getBaseContext(), e.getMessage(),
                             Toast.LENGTH_SHORT).show();
                 }
 
                 //publickey save to file
+                File myFilep1 = new File("/sdcard/mypublickeyp.txt");
+                File myFiley = new File("/sdcard/mypublickeyy.txt");
+                File myFileg=  new File("/sdcard/mypublickeyg.txt");
 
                 try {
-                    File myFilep = new File("/sdcard/mypublickeyp.txt");
-                    File myFiley = new File("/sdcard/mypublickeyy.txt");
-                    File myFileg=  new File("/sdcard/mypublickeyg.txt");
-                    if(!myFilep.exists() && !myFiley.exists() && !myFileg.exists()){
-                        myFilep.createNewFile();
+
+                    if(!myFilep1.exists() && !myFiley.exists() && !myFileg.exists()) {
+                        myFilep1.createNewFile();
                         myFiley.createNewFile();
                         myFileg.createNewFile();
+
+
+                        FileWriter fwp = new FileWriter(myFilep1);
+                        FileWriter fwy = new FileWriter(myFiley);
+                        FileWriter fwg = new FileWriter(myFileg);
+
+                        fwp.write(p.toString());
+                        fwp.flush();
+                        fwp.close();
+
+                        fwy.write(y.toString());
+                        fwy.flush();
+                        fwy.close();
+
+                        fwg.write(g.toString());
+                        fwg.flush();
+                        fwg.close();
+
+                        Toast.makeText(getBaseContext(), "Done writing SD mypublickey", Toast.LENGTH_SHORT).show();
                     }
-
-                    FileWriter fwp=new FileWriter(myFilep);
-                    FileWriter fwy=new FileWriter(myFiley);
-                    FileWriter fwg=new FileWriter(myFileg);
-
-                    fwp.write(p.toString());
-                    fwp.flush();
-                    fwp.close();
-
-                    fwy.write(y.toString());
-                    fwy.flush();
-                    fwy.close();
-
-                    fwg.write(g.toString());
-                    fwg.flush();
-                    fwg.close();
-
-                    Toast.makeText(getBaseContext(), "Done writing SD mypublickey", Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
+                    } catch (Exception e) {
                     Toast.makeText(getBaseContext(), e.getMessage(),
                             Toast.LENGTH_SHORT).show();
                 }
-
-
 
 
             }
@@ -230,27 +239,53 @@ public class Send_activity extends AppCompatActivity {
         byte[] out1 = blowfish.blowfishEncrypt(bytes, 0, out, 0);
         byte[] out3=new byte[56];
         System.arraycopy(out1,out1.length-56,out3,0,out3.length);
-        elgamal.encrypt(out3,kset.getPk().getP(),kset.getPk().getY(),kset.getPk().getG());
-        byte[] c1=elgamal.getc1();
-        byte[] c2=elgamal.getc2();
-        byte[] outtodecode=new byte[c1.length+c2.length+out1.length-56];
-        System.arraycopy(out1,0,outtodecode,0,out1.length-56);
-        System.arraycopy(c1,0,outtodecode,0+out1.length-56,c1.length);
-        System.arraycopy(c2,0,outtodecode,out1.length-56+c1.length,c2.length);
-        //byte[] out2 = encodingfunction(out1, 0);
-        byte[] out2=encodingfunction(outtodecode,0);
+
+        File sdcard= Environment.getExternalStorageDirectory();
+        File filep=new File(sdcard,"mypublickeyp.txt");
+        File filey=new File(sdcard,"mypublickeyy.txt");
+        File fileg=new File(sdcard,"mypublickeyg.txt");
+        try {
+            BufferedReader brp=new BufferedReader(new FileReader(filep));
+            BufferedReader bry=new BufferedReader(new FileReader(filey));
+            BufferedReader brg=new BufferedReader(new FileReader(fileg));
+
+            String p1=brp.readLine();
+            brp.close();
+            BigInteger p=new BigInteger(p1);
+
+            String y1=bry.readLine();
+            bry.close();
+            BigInteger y=new BigInteger(y1);
+
+            String g1=brg.readLine();
+            brg.close();
+            BigInteger g=new BigInteger(g1);
+
+            elgamal.encrypt(out3,p /*kset.getPk().getP()*/, y/*kset.getPk().getY()*/,g /*kset.getPk().getG()*/);
+            byte[] c1 = elgamal.getc1();
+            byte[] c2 = elgamal.getc2();
+            byte[] outtodecode = new byte[c1.length + c2.length + out1.length - 56];
+            System.arraycopy(out1, 0, outtodecode, 0, out1.length - 56);
+            System.arraycopy(c1, 0, outtodecode, 0 + out1.length - 56, c1.length);
+            System.arraycopy(c2, 0, outtodecode, out1.length - 56 + c1.length, c2.length);
+            //byte[] out2 = encodingfunction(out1, 0);
+            byte[] out2 = encodingfunction(outtodecode, 0);
 
 
-        String aString = new String(out2);
-        if (ContextCompat.checkSelfPermission(this, permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            getPermissionToReadSMS();
-        } else {
-            SmsManager sms=SmsManager.getDefault();
-            ArrayList<String> parts=sms.divideMessage(aString);
-            sms.sendMultipartTextMessage(theNumber,null,parts,null,null);
-            //smsManager.sendTextMessage(theNumber, null, aString, null, null);
-            Toast.makeText(this, "Message sent!", Toast.LENGTH_SHORT).show();
+            String aString = new String(out2);
+            if (ContextCompat.checkSelfPermission(this, permission.SEND_SMS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                getPermissionToReadSMS();
+            } else {
+                SmsManager sms = SmsManager.getDefault();
+                ArrayList<String> parts = sms.divideMessage(aString);
+                sms.sendMultipartTextMessage(theNumber, null, parts, null, null);
+                //smsManager.sendTextMessage(theNumber, null, aString, null, null);
+                Toast.makeText(this, "Message sent!", Toast.LENGTH_SHORT).show();
+            }
+        }catch (Exception e){
+            Toast.makeText(getBaseContext(), e.getMessage(),
+                    Toast.LENGTH_SHORT).show();
         }
     }
 

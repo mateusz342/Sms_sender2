@@ -26,7 +26,7 @@ public class Elgamal_keyset {
 
         do{
             g=new BigInteger(p.bitCount()-1,new SecureRandom());
-            if(p.compareTo(g)==1 && !g.modPow(p_prime,p).equals(BigInteger.ONE) && !g.modPow(new BigInteger("2"),p).equals(BigInteger.ONE)){
+            if(p.compareTo(g)==1 && g.modPow(p_prime,p).equals(BigInteger.ONE) && !g.modPow(new BigInteger("2"),p).equals(BigInteger.ONE)){
                 found=true;
             }
         }while(!found);
