@@ -2,7 +2,6 @@ package pl.edu.wat.sms_sender2;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -26,35 +25,61 @@ public class Elgamal {
         do{
             p=BigInteger.probablePrime(1024, new Random());
             //p=p_prime.multiply(variable).add(BigInteger.ONE);
-
-        }while(!p.isProbablePrime(100));
+            p_prime=p.subtract(BigInteger.ONE).divide(variable);
+        }while(!p_prime.isProbablePrime(100));
         return p;
     }
 
-    public void encrypt(byte[] in,BigInteger p,BigInteger y, BigInteger g){
-        this.p=p;
-        this.y=y;
-        this.g=g;
-        BigInteger table=new BigInteger(in);
+    public void encrypt(byte[] in,BigInteger p,BigInteger y, BigInteger g) {
+        this.p = p;
+        this.y = y;
+        this.g = g;
+        BigInteger table = new BigInteger(in);
         BigInteger k;
+        int lenghtc1;
+        int lenghttable;
+        BigInteger i;
+do {
+    do {
+        k = new BigInteger(p.bitCount() - 1, new SecureRandom());
+         i=gcd(p.subtract(BigInteger.ONE),k);
+    } while (p.compareTo(k) == -1 || !i.equals(BigInteger.ONE));
 
-        do{
-            k=new BigInteger(p.bitCount()-1,new SecureRandom());
-        }while(p.compareTo(k)==-1);
+    table = (table.multiply(y.modPow(k, p))).mod(p);
+    lenghttable = table.bitLength();
 
-        table=(table.multiply(y.modPow(k,p))).mod(p);
+    BigInteger c1 = g.modPow(k, p);
+    lenghtc1 = c1.bitLength();
 
-        BigInteger c1=g.modPow(k,p);
-        byte[] arrayc1=c1.toByteArray();
-        byte[] arrayc2=table.toByteArray();
-        if(arrayc1.length==129){
+    byte[] arrayc1 = c1.toByteArray();
+    byte[] arrayc2 = table.toByteArray();
+
+        /*if(arrayc1.length==129){
             arrayc1=Arrays.copyOfRange(arrayc1,1,arrayc1.length);
         }
         if(arrayc2.length==129){
             arrayc2=Arrays.copyOfRange(arrayc2,1,arrayc2.length);
+        }*/
+    this.c1 = arrayc1;
+    this.c2 = arrayc2;
+
+
+}while(lenghtc1==1024||lenghttable==1024);
+    }
+
+    private static BigInteger gcd(BigInteger pminus1, BigInteger k) {
+        BigInteger q;
+        BigInteger c;
+        int comp1;
+        do{
+            q=pminus1.divide(k);
+            c=k;
+            k=pminus1.subtract(q.multiply(k));
+            pminus1=c;
+            comp1=k.compareTo(BigInteger.ZERO);
         }
-        this.c1=arrayc1;
-        this.c2=arrayc2;
+        while(comp1>0);
+        return pminus1;
     }
 
 
@@ -62,12 +87,16 @@ public class Elgamal {
         byte[] outkey=new byte[56];
         BigInteger c11=new BigInteger(c1);
         BigInteger c22=new BigInteger(c2);
+        int plaintextlength;
         this.p=p;
         this.x=x;
-
+        byte[] x1=x.toByteArray();
+        int lenght1=x1.length;
         BigInteger tmp=c11.modPow(x,p);
+        byte[] tmpc1=tmp.toByteArray();
+        int length=tmpc1.length;
         BigInteger plaintext=c22.multiply(tmp.modInverse(p)).mod(p);
-
+        plaintextlength=plaintext.bitLength();
         byte[] key=plaintext.toByteArray();
 
         return key;

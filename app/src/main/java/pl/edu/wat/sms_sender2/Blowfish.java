@@ -500,14 +500,16 @@ public class Blowfish {
     }
 
     public byte[] KeyGenerator() throws NoSuchAlgorithmException {
+        byte[] kk;
+        do{
         KeyGenerator keyGenerator= KeyGenerator.getInstance("Blowfish");
         keyGenerator.init(448);
 
         SecretKey key=keyGenerator.generateKey();
 
-        byte[] kk=key.getEncoded();
+        kk=key.getEncoded();
+        }while(kk[0]<0);
         return kk;
-
     }
 
 
