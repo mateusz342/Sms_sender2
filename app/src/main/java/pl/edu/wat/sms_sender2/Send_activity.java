@@ -237,8 +237,8 @@ public class Send_activity extends AppCompatActivity {
         String theNumber = tvNumber.getText().toString();
         byte[] bytes = input.getText().toString().getBytes();
         byte[] out1 = blowfish.blowfishEncrypt(bytes, 0, out, 0);
-        byte[] out3=new byte[56];
-        System.arraycopy(out1,out1.length-56,out3,0,out3.length);
+        byte[] out3=new byte[32];
+        System.arraycopy(out1,out1.length-32,out3,0,out3.length);
 
         File sdcard= Environment.getExternalStorageDirectory();
         File filep=new File(sdcard,"mypublickeyp.txt");
@@ -264,10 +264,10 @@ public class Send_activity extends AppCompatActivity {
             elgamal.encrypt(out3,p /*kset.getPk().getP()*/, y/*kset.getPk().getY()*/,g /*kset.getPk().getG()*/);
             byte[] c1 = elgamal.getc1();
             byte[] c2 = elgamal.getc2();
-            byte[] outtodecode = new byte[c1.length + c2.length + out1.length - 56];
-            System.arraycopy(out1, 0, outtodecode, 0, out1.length - 56);
-            System.arraycopy(c1, 0, outtodecode, 0 + out1.length - 56, c1.length);
-            System.arraycopy(c2, 0, outtodecode, out1.length - 56 + c1.length, c2.length);
+            byte[] outtodecode = new byte[c1.length + c2.length + out1.length - 32];
+            System.arraycopy(out1, 0, outtodecode, 0, out1.length - 32);
+            System.arraycopy(c1, 0, outtodecode, 0 + out1.length - 32, c1.length);
+            System.arraycopy(c2, 0, outtodecode, out1.length - 32 + c1.length, c2.length);
             //byte[] out2 = encodingfunction(out1, 0);
             byte[] out2 = encodingfunction(outtodecode, 0);
 

@@ -32,22 +32,25 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
         Bundle intentExtras=intent.getExtras();
 
         if(intentExtras!=null) {
-            Object[] sms = (Object[]) intentExtras.get(SMS_BUNDLE);
+             Object[] sms = (Object[]) intentExtras.get(SMS_BUNDLE);
             String smsMessageStr = "";
             String format;
             SmsMessage smsMessage;
             String smsBody;
             String address1;
             StringBuilder bodyText = new StringBuilder();
+            StringBuilder address=new StringBuilder();
             String body;
-            String address;
+            byte[] out = new byte[0];
             for (int i = 0; i < sms.length; ++i) {
                 format = intentExtras.getString("format");
                 smsMessage = SmsMessage.createFromPdu((byte[]) sms[i], format);
-                address = smsMessage.getOriginatingAddress().toString();
+                //address = smsMessage.getOriginatingAddress().toString();
+                address.append(smsMessage.getOriginatingAddress().toString());
                 bodyText.append(smsMessage.getMessageBody().toString());
                 }
-                 body=bodyText.toString();
+                body=bodyText.toString();
+                address1=address.substring(0,12);
                 out1 = body.getBytes();
                 //out1=smsBody.toByteArray();
                 int length = out1.length;
@@ -75,22 +78,22 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
                         BigInteger x = new BigInteger(x1);
 
                         byte[] key = elgamal.decrypt(c1, c2, p/*kset.getPrk().getP()*/, x /*kset.getPrk().getX()*/);
-                    }catch (Exception e){
 
-                    }
-                    byte[] keytoblowfish = Arrays.copyOfRange(in, in.length - 56, in.length);
+                    //byte[] keytoblowfish = Arrays.copyOfRange(in, in.length - 56, in.length);
                     byte[] out3 = new byte[ciphertextonly.length];
-                    byte[] out = new byte[0];
+
                     try {
-                        out = blowfish.blowfishDecrypt(ciphertextonly, 0, out3, 0, keytoblowfish);
+                        out = blowfish.blowfishDecrypt(ciphertextonly, 0, out3, 0,key /*keytoblowfish*/);
                     } catch (KeyException e) {
                         e.printStackTrace();
                     } catch (NoSuchAlgorithmException e) {
                         e.printStackTrace();
                     }
+                    }catch (Exception e){
 
+                    }
                     String o = new String(out);
-                   // smsMessageStr += "SMS From: " + address + "\n";
+                    smsMessageStr += "SMS From: " + address1 + "\n";
                     smsMessageStr += o + "\n";
                 }
 

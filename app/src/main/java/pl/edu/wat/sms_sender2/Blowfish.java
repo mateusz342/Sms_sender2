@@ -501,9 +501,10 @@ public class Blowfish {
 
     public byte[] KeyGenerator() throws NoSuchAlgorithmException {
         byte[] kk;
+        //BigInteger k=new BigInteger("6903699535163592777964525844159052220015150196121557696466240812626270699626");
         do{
         KeyGenerator keyGenerator= KeyGenerator.getInstance("Blowfish");
-        keyGenerator.init(448);
+        keyGenerator.init(256);
 
         SecretKey key=keyGenerator.generateKey();
 
