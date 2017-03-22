@@ -21,15 +21,11 @@ public class Elgamal_keyset {
         BigInteger p=Elgamal.getPrime();
         BigInteger p_prime=(p.subtract(BigInteger.ONE).divide(new BigInteger("2")));
         BigInteger g;
-        BigInteger h;
-        BigInteger exponent;
 
         boolean found=false;
 
         do{
             g=new BigInteger(p.bitCount()-1,new SecureRandom());
-            h=new BigInteger(p.bitCount()-1,new SecureRandom());
-            exponent=p.subtract(BigInteger.ONE).divide(p_prime);
             if(p.compareTo(g)==1 && !g.modPow(p_prime,p).equals(BigInteger.ONE) && !g.modPow(new BigInteger("2"),p).equals(BigInteger.ONE)){
                 found=true;
             }

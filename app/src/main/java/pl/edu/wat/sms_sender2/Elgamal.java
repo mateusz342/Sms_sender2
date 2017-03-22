@@ -24,7 +24,6 @@ public class Elgamal {
         BigInteger p,p_prime;
         do{
             p=BigInteger.probablePrime(1024, new Random());
-            //p=p_prime.multiply(variable).add(BigInteger.ONE);
             p_prime=p.subtract(BigInteger.ONE).divide(variable);
         }while(!p_prime.isProbablePrime(100));
         return p;
@@ -34,22 +33,18 @@ public class Elgamal {
         this.p = p;
         this.y = y;
         this.g = g;
-        BigInteger dividor=new BigInteger("2");
         BigInteger table = new BigInteger(in);
         BigInteger c2;
-        BigInteger p_prime;
-        p_prime= p.subtract(BigInteger.ONE).divide(dividor);
         BigInteger k;
         int lenghtc1;
         int lenghtc2;
         BigInteger i;
 do {
     do {
-        k = new BigInteger(p_prime.bitCount() - 1, new SecureRandom());
+        k = new BigInteger(p.bitCount() - 1, new SecureRandom());
          i=gcd(p.subtract(BigInteger.ONE),k);
     } while (p.compareTo(k) == -1 || !i.equals(BigInteger.ONE));
 
-    //k=new BigInteger("5007045949397099653079893236726853196796153793203906418691238721694914186752524453451067688305258794553464612147433593571828622176303584541499565656856569651583");
     c2 = (table.multiply(y.modPow(k, p))).mod(p);
     lenghtc2 = c2.bitLength();
 
@@ -59,12 +54,6 @@ do {
     byte[] arrayc1 = c1.toByteArray();
     byte[] arrayc2 = c2.toByteArray();
 
-        /*if(arrayc1.length==129){
-            arrayc1=Arrays.copyOfRange(arrayc1,1,arrayc1.length);
-        }
-        if(arrayc2.length==129){
-            arrayc2=Arrays.copyOfRange(arrayc2,1,arrayc2.length);
-        }*/
     this.c1 = arrayc1;
     this.c2 = arrayc2;
 
@@ -103,7 +92,6 @@ do {
         byte[] tmp2=new byte[length-1];
 
         BigInteger modinv=tmp.modInverse(p);
-        byte[] modinvbyte=modinv.toByteArray();
         BigInteger plaintext=(c22.multiply(modinv)).mod(p);
 
         plaintextlength=plaintext.bitLength();
