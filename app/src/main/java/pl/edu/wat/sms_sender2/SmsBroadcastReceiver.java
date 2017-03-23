@@ -54,10 +54,12 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
                 out1 = body.getBytes();
                 //out1=smsBody.toByteArray();
                 int length = out1.length;
-                if (out1[length - 1] == 32) {
-                   // smsMessageStr += "SMS From: " + address + "\n";
+                if (body.substring(0,1).equals("p")) {
+                    smsMessageStr += "SMS From: " + address1 + "\n";
                     smsMessageStr += body + "\n";
-                } else {
+                    Toast.makeText(context, "Public key received!", Toast.LENGTH_SHORT).show();
+                }
+                else {
                     byte[] in = decodingfunction(out1, 0);
                     byte[] ciphertextonly = Arrays.copyOfRange(in, 0, in.length - 256);
                     byte[] c1 = Arrays.copyOfRange(in, in.length - 256, in.length - 128);
@@ -95,11 +97,12 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
                     String o = new String(out);
                     smsMessageStr += "SMS From: " + address1 + "\n";
                     smsMessageStr += o + "\n";
+                    Toast.makeText(context, "Message Received!", Toast.LENGTH_SHORT).show();
                 }
 
 
 
-            Toast.makeText(context, "Message Received!", Toast.LENGTH_SHORT).show();
+
 
 
             if (Send_activity.active) {

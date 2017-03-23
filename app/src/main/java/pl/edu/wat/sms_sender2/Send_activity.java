@@ -339,12 +339,43 @@ public class Send_activity extends AppCompatActivity {
     public void onSendClick1(View view) {
         tvNumber = (EditText) findViewById(R.id.tvNumber);
         String theNumber = tvNumber.getText().toString();
-        if (ContextCompat.checkSelfPermission(this, permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            getPermissionToReadSMS();
-        } else {
-            smsManager.sendTextMessage(theNumber, null, input.getText().toString() + " ", null, null);
-            Toast.makeText(this, "Message sent!", Toast.LENGTH_SHORT).show();
+
+        File sdcard= Environment.getExternalStorageDirectory();
+        File filep=new File(sdcard,"mypublickeyp.txt");
+        File filey=new File(sdcard,"mypublickeyy.txt");
+        File fileg=new File(sdcard,"mypublickeyg.txt");
+
+        try {
+            BufferedReader brp = new BufferedReader(new FileReader(filep));
+            BufferedReader bry = new BufferedReader(new FileReader(filey));
+            BufferedReader brg = new BufferedReader(new FileReader(fileg));
+
+            String p1 = brp.readLine();
+            brp.close();
+
+            String y1 = bry.readLine();
+            bry.close();
+
+
+            String g1 = brg.readLine();
+            brg.close();
+
+            String message=new String("p="+p1+"y="+y1+"g="+g1);
+            if (ContextCompat.checkSelfPermission(this, permission.SEND_SMS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                getPermissionToReadSMS();
+            } else {
+            /*smsManager.sendTextMessage(theNumber, null, input.getText().toString() + " ", null, null);
+            Toast.makeText(this, "Message sent!", Toast.LENGTH_SHORT).show();*/
+                SmsManager sms = SmsManager.getDefault();
+                ArrayList<String> parts = sms.divideMessage(message);
+                sms.sendMultipartTextMessage(theNumber, null, parts, null, null);
+                //smsManager.sendTextMessage(theNumber, null, aString, null, null);
+                Toast.makeText(this, "Public key send!", Toast.LENGTH_SHORT).show();
+            }
+        }catch(Exception e){
+            Toast.makeText(getBaseContext(), e.getMessage(),
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
