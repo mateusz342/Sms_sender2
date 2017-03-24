@@ -12,6 +12,7 @@ import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.math.BigInteger;
 import java.security.KeyException;
 import java.security.NoSuchAlgorithmException;
@@ -50,7 +51,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
                 bodyText.append(smsMessage.getMessageBody().toString());
                 }
                 body=bodyText.toString();
-                address1=address.substring(0,12);
+                address1=address.substring(3,12);
                 out1 = body.getBytes();
                 //out1=smsBody.toByteArray();
                 int length = out1.length;
@@ -58,6 +59,47 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
                     smsMessageStr += "SMS From: " + address1 + "\n";
                     smsMessageStr += body + "\n";
                     Toast.makeText(context, "Public key received!", Toast.LENGTH_SHORT).show();
+
+
+                    File myFilep = new File("/sdcard/"+address1+"p.txt");
+                    File myFiley = new File("/sdcard/"+address1+"y.txt");
+                    File myFileg=  new File("/sdcard/"+address1+"g.txt");
+
+                    try {
+
+
+                            myFilep.createNewFile();
+                            myFiley.createNewFile();
+                            myFileg.createNewFile();
+
+
+                            FileWriter fwp = new FileWriter(myFilep);
+                            FileWriter fwy = new FileWriter(myFiley);
+                            FileWriter fwg = new FileWriter(myFileg);
+
+                        int i=bodyText.indexOf("y");
+                        String p=bodyText.substring(1,i);
+                        fwp.write(p.toString());
+                        fwp.flush();
+                        fwp.close();
+
+                        int i1=bodyText.indexOf("g");
+                        String y=bodyText.substring(i+1,i1);
+                        fwy.write(y.toString());
+                        fwy.flush();
+                        fwy.close();
+
+                        String g=bodyText.substring(i1+1,bodyText.length());
+                        fwg.write(g.toString());
+                        fwg.flush();
+                        fwg.close();
+
+                        Toast.makeText(context, "Done writing SD publickey of receiver", Toast.LENGTH_SHORT).show();
+
+                    } catch (Exception e) {
+                        Toast.makeText(context, e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else {
                     byte[] in = decodingfunction(out1, 0);

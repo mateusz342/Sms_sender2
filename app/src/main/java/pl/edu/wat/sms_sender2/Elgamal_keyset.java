@@ -34,8 +34,8 @@ public class Elgamal_keyset {
         BigInteger x;
 
         do{
-            x=new BigInteger(p_prime.bitCount()-1,new SecureRandom());
-        }while(p_prime.compareTo(x)==-1);
+            x=new BigInteger(p.bitCount()-1,new SecureRandom());
+        }while(p.compareTo(x)==-1);
 
         BigInteger y=g.modPow(x,p);
 

@@ -147,7 +147,7 @@ public class Send_activity extends AppCompatActivity {
                         fwp.flush();
                         fwp.close();
 
-                        Toast.makeText(getBaseContext(), "Done writing SD 'myprivatekeyx.txt' and 'myprivatekeyp'", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getBaseContext(), "Done writing SD my private key", Toast.LENGTH_SHORT).show();
 
                     }
                     } catch (Exception e) {
@@ -241,10 +241,11 @@ public class Send_activity extends AppCompatActivity {
         System.arraycopy(out1,out1.length-32,out3,0,out3.length);
 
         File sdcard= Environment.getExternalStorageDirectory();
-        File filep=new File(sdcard,"mypublickeyp.txt");
-        File filey=new File(sdcard,"mypublickeyy.txt");
-        File fileg=new File(sdcard,"mypublickeyg.txt");
+        File filep=new File(sdcard,theNumber+"p.txt");
+        File filey=new File(sdcard,theNumber+"y.txt");
+        File fileg=new File(sdcard,theNumber+"g.txt");
         try {
+            if(filep.exists() && filey.exists() && fileg.exists()) {
             BufferedReader brp=new BufferedReader(new FileReader(filep));
             BufferedReader bry=new BufferedReader(new FileReader(filey));
             BufferedReader brg=new BufferedReader(new FileReader(fileg));
@@ -282,6 +283,9 @@ public class Send_activity extends AppCompatActivity {
                 sms.sendMultipartTextMessage(theNumber, null, parts, null, null);
                 //smsManager.sendTextMessage(theNumber, null, aString, null, null);
                 Toast.makeText(this, "Message sent!", Toast.LENGTH_SHORT).show();
+            }}
+            else{
+                Toast.makeText(this,"You need reveiver's public key",Toast.LENGTH_SHORT).show();
             }
         }catch (Exception e){
             Toast.makeText(getBaseContext(), e.getMessage(),
@@ -360,7 +364,7 @@ public class Send_activity extends AppCompatActivity {
             String g1 = brg.readLine();
             brg.close();
 
-            String message=new String("p="+p1+"y="+y1+"g="+g1);
+            String message=new String("p"+p1+"y"+y1+"g"+g1);
             if (ContextCompat.checkSelfPermission(this, permission.SEND_SMS)
                     != PackageManager.PERMISSION_GRANTED) {
                 getPermissionToReadSMS();
