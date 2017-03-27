@@ -350,6 +350,7 @@ public class Send_activity extends AppCompatActivity {
         File fileg=new File(sdcard,"mypublickeyg.txt");
 
         try {
+            if(filep.exists() && filey.exists() && fileg.exists()) {
             BufferedReader brp = new BufferedReader(new FileReader(filep));
             BufferedReader bry = new BufferedReader(new FileReader(filey));
             BufferedReader brg = new BufferedReader(new FileReader(fileg));
@@ -376,6 +377,9 @@ public class Send_activity extends AppCompatActivity {
                 sms.sendMultipartTextMessage(theNumber, null, parts, null, null);
                 //smsManager.sendTextMessage(theNumber, null, aString, null, null);
                 Toast.makeText(this, "Public key send!", Toast.LENGTH_SHORT).show();
+            }}
+            else{
+                Toast.makeText(this, "First, you have to generate your pair of keys!", Toast.LENGTH_SHORT).show();
             }
         }catch(Exception e){
             Toast.makeText(getBaseContext(), e.getMessage(),

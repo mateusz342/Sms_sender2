@@ -42,10 +42,11 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
             StringBuilder bodyText = new StringBuilder();
             StringBuilder address=new StringBuilder();
             String body;
+            int iterator;
             byte[] out = new byte[0];
-            for (int i = 0; i < sms.length; ++i) {
+            for (iterator = 0; iterator < sms.length; ++iterator) {
                 format = intentExtras.getString("format");
-                smsMessage = SmsMessage.createFromPdu((byte[]) sms[i], format);
+                smsMessage = SmsMessage.createFromPdu((byte[]) sms[iterator], format);
                 //address = smsMessage.getOriginatingAddress().toString();
                 address.append(smsMessage.getOriginatingAddress().toString());
                 bodyText.append(smsMessage.getMessageBody().toString());
@@ -55,7 +56,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
                 out1 = body.getBytes();
                 //out1=smsBody.toByteArray();
                 int length = out1.length;
-                if (body.substring(0,1).equals("p")) {
+                if (body.substring(0,1).equals("p")&&(iterator==6)) {
                     smsMessageStr += "SMS From: " + address1 + "\n";
                     smsMessageStr += body + "\n";
                     Toast.makeText(context, "Public key received!", Toast.LENGTH_SHORT).show();
@@ -100,6 +101,12 @@ public class SmsBroadcastReceiver extends BroadcastReceiver{
                         Toast.makeText(context, e.getMessage(),
                                 Toast.LENGTH_SHORT).show();
                     }
+                }
+
+                else if(iterator<4){
+                    smsMessageStr += "SMS From: " + address1 + "\n";
+                    smsMessageStr += body + "\n";
+                    Toast.makeText(context, "Message Received!", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     byte[] in = decodingfunction(out1, 0);
